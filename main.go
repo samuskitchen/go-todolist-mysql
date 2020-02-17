@@ -1,7 +1,7 @@
 package main
 
 import (
-	
+	"./driver"
 	"fmt"
 	"github.com/gorilla/mux"
 	log "github.com/sirupsen/logrus"
@@ -16,8 +16,9 @@ func main() {
 	dbHost := os.Getenv("DB_HOST")
 	dbUser := os.Getenv("DB_USER")
 	dbPort := os.Getenv("DB_PORT")
+	dbPass := os.Getenv("DB_PASS")
 
-	connection, err := driver.ConnectSQL(dbHost, dbPort, dbUser, "", dbName)
+	connection, err := driver.ConnectSQL(dbHost, dbPort, dbUser, dbPass, dbName)
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(-1)
