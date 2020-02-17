@@ -1,9 +1,11 @@
 package main
 
 import (
-	"./driver"
 	"fmt"
 	"github.com/gorilla/mux"
+	dh "github.com/samuskitchen/go-todolist-mysql/handler/http"
+	//"github.com/samuskitchen/go-todolist-mysql/domain"
+	"github.com/samuskitchen/go-todolist-mysql/driver"
 	log "github.com/sirupsen/logrus"
 	"io"
 	"net/http"
@@ -25,11 +27,25 @@ func main() {
 	}
 	defer connection.SQL.Close()
 
+	//connection.SQL.Debug().DropTableIfExists(&domain.TodoItemModel{})
+	//connection.SQL.Debug().AutoMigrate(&domain.TodoItemModel{})
+
 
 	log.Info("Starting TodoList API server")
 	router := mux.NewRouter()
-	router.HandleFunc("/healthz", HealThz).Methods("GET")
+
+	dHandler := dh.NewTodoHandler(connection)
+	router.Handle("/", domainRouter(dHandler))
+
 	http.ListenAndServe(":8080", router)
+}
+
+func domainRouter(dHandler *dh.Todo) http.Handler {
+	r := mux.NewRouter()
+	r.HandleFunc("/healthz", HealThz).Methods("GET")
+	r.HandleFunc("/todo", dHandler.CreateItem).Methods("POST")
+
+	return r
 }
 
 func HealThz(w http.ResponseWriter, r *http.Request) {
