@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/gorilla/mux"
 	"github.com/rs/cors"
+	"github.com/samuskitchen/go-todolist-mysql/domain"
 	dh "github.com/samuskitchen/go-todolist-mysql/handler/http"
 	//"github.com/samuskitchen/go-todolist-mysql/domain"
 	"github.com/samuskitchen/go-todolist-mysql/driver"
@@ -28,8 +29,8 @@ func main() {
 	}
 	defer connection.SQL.Close()
 
-	//connection.SQL.Debug().DropTableIfExists(&domain.TodoItemModel{})
-	//connection.SQL.Debug().AutoMigrate(&domain.TodoItemModel{})
+	connection.SQL.Debug().DropTableIfExists(&domain.TodoItemModel{})
+	connection.SQL.Debug().AutoMigrate(&domain.TodoItemModel{})
 
 	log.Info("Starting TodoList API server")
 	router := mux.NewRouter()
