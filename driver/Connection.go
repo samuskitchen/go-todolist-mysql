@@ -14,8 +14,6 @@ type DB struct {
 
 var dbConn = &DB{}
 
-//var db, _ = gorm.Open("mysql", "root:root@/todolist?charset=utf8&parseTime=True&loc=Local")
-
 func ConnectSQL(host, port, user, pass, dbname string) (*DB, error) {
 
 	dbSource := fmt.Sprintf(

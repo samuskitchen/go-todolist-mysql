@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"github.com/gorilla/mux"
+	"github.com/rs/cors"
 	dh "github.com/samuskitchen/go-todolist-mysql/handler/http"
 	//"github.com/samuskitchen/go-todolist-mysql/domain"
 	"github.com/samuskitchen/go-todolist-mysql/driver"
@@ -30,22 +31,23 @@ func main() {
 	//connection.SQL.Debug().DropTableIfExists(&domain.TodoItemModel{})
 	//connection.SQL.Debug().AutoMigrate(&domain.TodoItemModel{})
 
-
 	log.Info("Starting TodoList API server")
 	router := mux.NewRouter()
 
-	dHandler := dh.NewTodoHandler(connection)
-	router.Handle("/", domainRouter(dHandler))
+	tHandler := dh.NewTodoHandler(connection)
+	router.HandleFunc("/health", HealThz).Methods("GET")
+	router.HandleFunc("/todo", tHandler.CreateItem).Methods("POST")
+	router.HandleFunc("/todo/{id}", tHandler.UpdateItem).Methods("PUT")
+	router.HandleFunc("/todo/{id}", tHandler.DeleteItem).Methods("DELETE")
+	router.HandleFunc("/todo-completed", tHandler.GetCompletedItems).Methods("GET")
+	router.HandleFunc("/todo-incomplete", tHandler.GetIncompleteItems).Methods("GET")
 
-	http.ListenAndServe(":8080", router)
-}
+	handler := cors.New(cors.Options{
+		AllowedMethods: []string{"GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"},
+	}).Handler(router)
 
-func domainRouter(dHandler *dh.Todo) http.Handler {
-	r := mux.NewRouter()
-	r.HandleFunc("/healthz", HealThz).Methods("GET")
-	r.HandleFunc("/todo", dHandler.CreateItem).Methods("POST")
 
-	return r
+	http.ListenAndServe(":8085", handler)
 }
 
 func HealThz(w http.ResponseWriter, r *http.Request) {

@@ -1,15 +1,13 @@
 package repository
 
-import(
-	"context"
+import (
 	"github.com/samuskitchen/go-todolist-mysql/domain"
 )
 
-type RepoTodo interface {
-	CreateItem(ctx context.Context, todo domain.TodoItemModel) error
-	UpdateItem(ctx context.Context, todo domain.TodoItemModel) error
-	DeleteItem(ctx context.Context, id int) error
-	GetItemByID(ctx context.Context, id int) (bool, error)
-	GetCompletedItems(ctx context.Context,  completed bool) ([]domain.TodoItemModel, error)
-	GetIncompleteItems(ctx context.Context,  inCompleted bool) ([]domain.TodoItemModel, error)
+type TodoRepo interface {
+	CreateItem(todo domain.TodoItemModel) (interface{}, error)
+	UpdateItem(todo domain.TodoItemModel) (bool, error)
+	DeleteItem(id int) (bool, error)
+	GetItemByID(id int) (bool, error)
+	GetTodoItems( completed bool) interface{}
 }
